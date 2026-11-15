@@ -240,3 +240,25 @@ Na mudança coordenada:
 O GitHub informa que DNS e disponibilização do HTTPS podem levar até 24 horas.
 Não ative a configuração de domínio do GitHub antes de coordenar a mudança de
 DNS, pois o endereço antigo passa a redirecionar para o endereço novo.
+
+### Autorizar o acesso DNS para a migração
+
+Em https://dash.cloudflare.com/profile/api-tokens, crie um token usando o
+modelo **Edit zone DNS**. Mantenha a permissão **Zone → DNS → Edit** e restrinja
+**Zone Resources → Include → Specific zone → vibelab.app.br**. A conta não
+precisa conceder edição de outras zonas. Pode definir validade curta para
+esta migração.
+
+Depois de criar e copiar o token, execute neste computador:
+
+```sh
+cd /home/sergio/Projetos/astro-air-ptbr
+python3 scripts/connect-cloudflare-dns.py
+```
+
+O programa recebe o token com entrada oculta, verifica acesso aos registros do
+subdomínio e guarda a credencial em `~/.config/volatil/cloudflare-dns-token`,
+fora do checkout, com permissão 600 e diretório 700. Não altera DNS nessa etapa.
+O token não deve ser enviado ao chat, ao GitHub ou a variáveis públicas.
+Após a migração, remova a cópia local dedicada; o proprietário pode revogar o
+token no painel Cloudflare.
