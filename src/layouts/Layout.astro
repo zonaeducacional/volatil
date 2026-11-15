@@ -10,6 +10,7 @@ import SiteHeader from '../components/site/SiteHeader.astro'
 import Umami from '../components/site/Umami.astro'
 import { config } from '../config'
 import { contentPath, localeFromParam } from '../lib/content'
+import { withBase } from '../lib/site'
 import '../styles/global.css'
 
 interface Props {
@@ -24,7 +25,8 @@ const publicPath = getRelativeLocaleUrl(
   lang,
   contentPath(Astro.url.pathname, lang),
 )
-const canonical = Astro.site ? new URL(publicPath, Astro.site) : undefined
+const canonical =
+  Astro.site && title !== '404' ? new URL(publicPath, Astro.site) : undefined
 ---
 
 <!doctype html>
@@ -42,7 +44,7 @@ const canonical = Astro.site ? new URL(publicPath, Astro.site) : undefined
     {!config.handwriting && (
       <link
         rel='preload'
-        href='/fonts/Snell-Black-SF.woff2'
+        href={withBase('fonts/Snell-Black-SF.woff2')}
         as='font'
         type='font/woff2'
         crossorigin
@@ -88,9 +90,10 @@ const canonical = Astro.site ? new URL(publicPath, Astro.site) : undefined
       rel="alternate"
       type="application/rss+xml"
       title={config.title}
-      href={new URL('rss.xml', Astro.site)}
+      href={new URL(withBase('rss.xml'), Astro.site)}
     />
     {config.favicon.map((icon) => <link rel='icon' {...icon} />)}
+    {title === '404' && <meta name='robots' content='noindex' />}
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     {canonical && <link rel='canonical' href={canonical} />}

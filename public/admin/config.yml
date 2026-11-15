@@ -1,0 +1,90 @@
+site_url: https://zonaeducacional.github.io/volatil
+display_url: https://zonaeducacional.github.io/volatil
+locale: pt
+backend:
+  name: github
+  repo: zonaeducacional/volatil
+  # base_url é fornecida pelo build a partir de DECAP_AUTH_URL (variável pública).
+  auth_endpoint: auth
+  auth_scope: public_repo
+  branch: main
+publish_mode: editorial_workflow
+media_folder: public/images/uploads
+public_folder: /volatil/images/uploads
+slug:
+  encoding: ascii
+  clean_accents: true
+collections:
+  - name: artigos
+    label: Artigos
+    label_singular: Artigo
+    folder: src/content/blog/pt-br
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    preview_path: posts/{{slug}}
+    fields:
+      - { name: title, label: Título, widget: string }
+      - { name: description, label: Resumo, widget: text }
+      - { name: author, label: Autor, widget: string, required: false }
+      - {
+          name: pubDate,
+          label: Data de publicação,
+          widget: datetime,
+          date_format: DD/MM/YYYY,
+          time_format: HH:mm,
+          format: "YYYY-MM-DDTHH:mm:ssZ",
+        }
+      - {
+          name: updatedDate,
+          label: Data de atualização,
+          widget: datetime,
+          required: false,
+          format: "YYYY-MM-DDTHH:mm:ssZ",
+        }
+      - {
+          name: draft,
+          label: Ocultar do site (rascunho),
+          widget: boolean,
+          default: false,
+          required: false,
+          hint: "O fluxo editorial mantém artigos não publicados em branches. Este campo também oculta um artigo presente na main.",
+        }
+      - {
+          name: pin,
+          label: Prioridade de destaque,
+          widget: number,
+          value_type: int,
+          min: 0,
+          max: 99,
+          default: 0,
+        }
+      - { name: category, label: Categoria, widget: string, required: false }
+      - { name: tags, label: Tags, widget: list, required: false }
+      - { name: body, label: Conteúdo, widget: markdown }
+  - name: paginas
+    label: Páginas
+    label_singular: Página
+    folder: src/content/pages/pt-br
+    create: false
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: Título, widget: string }
+      - { name: description, label: Resumo, widget: text }
+      - {
+          name: order,
+          label: Ordem,
+          widget: number,
+          value_type: int,
+          required: false,
+        }
+      - {
+          name: draft,
+          label: Ocultar do site,
+          widget: boolean,
+          default: false,
+          required: false,
+        }
+      - { name: body, label: Conteúdo, widget: markdown }

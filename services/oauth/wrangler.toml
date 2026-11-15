@@ -1,0 +1,9 @@
+name = "volatil-oauth"
+main = "worker.mjs"
+compatibility_date = "2026-11-15"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGIN = "https://zonaeducacional.github.io"
+REPOSITORY = "zonaeducacional/volatil"
+# GITHUB_CLIENT_ID e GITHUB_CLIENT_SECRET devem ser secrets do Worker.

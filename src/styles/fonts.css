@@ -30,6 +30,6 @@ html.handwriting {
   --font-title: Excalifont, Xiaolai, ui-sans-serif, system-ui, sans-serif;
 }
 
-html:not(:lang(en)) {
+html:not(:lang(en)):not(:lang(pt-br)) {
   letter-spacing: 0.12em;
 }

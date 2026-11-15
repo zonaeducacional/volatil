@@ -1,0 +1,49 @@
+{
+  "nav": {
+    "primary": "Navegação principal",
+    "home": "Início",
+    "blog": "Arquivo",
+    "archive": "Arquivo",
+    "tags": "Tags"
+  },
+  "home": {
+    "empty": "Nenhum artigo publicado ainda."
+  },
+  "blog": {
+    "description": "Artigos do blog.",
+    "latest": "Artigos recentes",
+    "categories": "Categorias",
+    "categoriesDescription": "Todas as categorias.",
+    "categoryDescription": "Artigos na categoria {name}.",
+    "tags": "Tags",
+    "tagsDescription": "Todas as tags.",
+    "tagDescription": "Artigos com a tag {name}."
+  },
+  "post": {
+    "author": "Autor",
+    "filedUnder": "Categoria",
+    "updated": "Atualizado",
+    "lastModified": "Última alteração",
+    "readingTime": "{minutes} min de leitura",
+    "toc": "Neste artigo",
+    "backToTop": "Voltar ao topo",
+    "imageViewer": "Imagem",
+    "closeImage": "Fechar"
+  },
+  "skip": "Pular para o conteúdo",
+  "notFound": {
+    "title": "Página não encontrada",
+    "body": "A página que você procura não está aqui.",
+    "home": "Voltar ao início"
+  },
+  "pager": {
+    "label": "Paginação",
+    "prev": "Anterior",
+    "next": "Próxima"
+  },
+  "footer": {
+    "designedBy": "Design de {author}",
+    "poweredBy": "Feito com {theme}",
+    "rss": "Assine via {rss}"
+  }
+}

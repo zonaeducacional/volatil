@@ -2,6 +2,7 @@ import { type CollectionEntry, getCollection } from 'astro:content'
 import { getRelativeLocaleUrl } from 'astro:i18n'
 import { defaultLang, isLocale, type Locale } from '../i18n'
 import { pageCount } from './pagination'
+import { withoutBase } from './site'
 
 function isPublished(data: { draft?: boolean }) {
   return import.meta.env.PROD ? data.draft !== true : true
@@ -171,7 +172,7 @@ export async function hasLocalePath(locale: Locale, path: string) {
 }
 
 export function contentPath(pathname: string, locale: Locale) {
-  const normalized = pathname.replace(/\/+$/, '') || '/'
+  const normalized = withoutBase(pathname).replace(/\/+$/, '') || '/'
   const prefix = `/${locale}`
   if (normalized === prefix || normalized.startsWith(`${prefix}/`)) {
     return normalized.slice(prefix.length).replace(/^\/+/, '')

@@ -1,11 +1,12 @@
 import en from '../../messages/en.json'
 import ja from '../../messages/ja.json'
 import ko from '../../messages/ko.json'
+import ptBr from '../../messages/pt-br.json'
 import zh from '../../messages/zh.json'
 import zhTw from '../../messages/zh-tw.json'
 import { config } from '../config'
 
-const messages = { en, zh, 'zh-tw': zhTw, ja, ko }
+const messages = { en, zh, 'zh-tw': zhTw, ja, ko, 'pt-br': ptBr }
 
 export type Locale = keyof typeof messages
 

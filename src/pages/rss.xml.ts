@@ -33,6 +33,6 @@ export async function GET(context: APIContext) {
         link: getRelativeLocaleUrl(locale, `posts/${entrySlug(post.id)}`),
       }
     }),
-    customData: '<language>en</language>',
+    customData: `<language>${defaultLang}</language>`,
   })
 }

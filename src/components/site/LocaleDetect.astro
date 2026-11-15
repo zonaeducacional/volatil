@@ -1,8 +1,11 @@
 ---
+import { config } from '../../config'
 import { defaultLang, locales } from '../../i18n'
+
+const base = config.base
 ---
 
-<script is:inline define:vars={{ locales, defaultLang }}>
+<script is:inline define:vars={{ locales, defaultLang, base }}>
   const localeKey = 'locale'
 
   function browserLocale() {
@@ -66,10 +69,10 @@ import { defaultLang, locales } from '../../i18n'
   } else {
     const preferred = preferredLocale()
     if (preferred && preferred !== defaultLang) {
-      const path = location.pathname
+      const path = location.pathname.slice(base.length) || '/'
       const prefix = `/${preferred}`
       if (path !== prefix && !path.startsWith(`${prefix}/`)) {
-        const target = `${prefix}${path === '/' ? '/' : path}`
+        const target = `${base}${prefix}${path === '/' ? '/' : path}`
         location.replace(`${target}${location.search}${location.hash}`)
       }
     }

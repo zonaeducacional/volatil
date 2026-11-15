@@ -1,5 +1,5 @@
 {
-  "name": "astro-air",
+  "name": "volatil",
   "type": "module",
   "version": "0.0.1",
   "license": "GPL-3.0-only",
@@ -8,11 +8,12 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && bun scripts/configure-admin.ts",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "biome check",
-    "format": "biome check --write"
+    "format": "biome check --write",
+    "test": "bun test services/oauth && bun scripts/verify-production.ts"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.10",

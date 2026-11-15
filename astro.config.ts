@@ -15,6 +15,8 @@ syncDefaultLocaleRewrites(defaultLang)
 // https://astro.build/config
 export default defineConfig({
   site: config.url,
+  base: config.base,
+  trailingSlash: 'always',
   env: {
     schema: {
       UMAMI_URL: envField.string({

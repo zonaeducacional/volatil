@@ -1,7 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n'
 import { config } from '../../config'
-import { useTranslations } from '../../i18n'
+import { locales, useTranslations } from '../../i18n'
 import { localeFromParam } from '../../lib/content'
 import LanguageNav from './LanguageNav.astro'
 import ThemeToggle from './ThemeToggle.astro'
@@ -30,7 +30,7 @@ const t = useTranslations(lang)
     </span>
   </a>
   <div class="flex items-center gap-6">
-    <LanguageNav />
+    {locales.length > 1 && <LanguageNav />}
     <ThemeToggle />
   </div>
 </header>

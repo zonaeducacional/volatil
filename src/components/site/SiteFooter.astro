@@ -2,6 +2,7 @@
 import Rss from '@lucide/astro/icons/rss'
 import { useTranslations } from '../../i18n'
 import { localeFromParam } from '../../lib/content'
+import { withBase } from '../../lib/site'
 
 const year = new Date().getFullYear()
 const t = useTranslations(localeFromParam(Astro.currentLocale))
@@ -36,10 +37,15 @@ const [rssBefore, rssAfter] = t('footer.rss').split('{rss}')
       {themeAfter}
     </span>
   </p>
+  <a
+    href="https://github.com/zonaeducacional/volatil"
+    class="underline underline-offset-4"
+    >Código-fonte · GPL-3.0-only</a
+  >
   <p class="inline-flex items-center gap-1.5">
     {rssBefore}
     <a
-      href="/rss.xml"
+      href={withBase('rss.xml')}
       class="inline-flex items-center gap-1 text-accent hover:text-accent-hover dark:text-accent-dark dark:hover:text-accent-dark-hover"
     >
       <Rss size={16} aria-hidden="true" />

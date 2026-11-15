@@ -1,188 +1,49 @@
-# Astro Air
+# Volátil
 
-[中文](./README.zh-CN.md)
+Blog em português brasileiro, baseado no [Astro Air](https://github.com/sun0225SUN/astro-air), com publicação automática no GitHub Pages e painel Decap CMS.
 
-A minimal multilingual blog theme for [Astro](https://astro.build).
+- Site: https://zonaeducacional.github.io/volatil/
+- Painel: https://zonaeducacional.github.io/volatil/admin/
+- Código: https://github.com/zonaeducacional/volatil
+- [Guia de operação e ativação do login](docs/operacao-pt-br.md)
+- [Origem, alterações e licença](UPSTREAM.md)
 
-[astro-air.guoqi.dev](https://astro-air.guoqi.dev)
+## Desenvolvimento
 
-![Astro Air on a laptop and a phone](./docs/preview.jpg)
+Requer **Bun 1.4.4**. O lockfile fixa Astro 7.4.12.
 
-## Features
-
-- English, Simplified Chinese, Traditional Chinese, Japanese, and Korean. The default language is served at `/`.
-- Home, archive, tags, categories, and custom pages
-- Pinned posts, reading time, and a last-modified time taken from Git
-- A table of contents that smooth-scrolls to the heading
-- Light and dark themes. The list title moves into the article, and the theme opens like a curtain.
-- Click an image in a post to view it
-- One RSS feed for every published post
-- Pagination, or a single page that lists every post
-
-How the motion works is in [docs/animations.md](./docs/animations.md).
-
-## Requirements
-
-[Bun](https://bun.sh) 1.4.4 or newer. `package.json` pins `packageManager` to `bun@1.4.4`.
-
-## Start
-
-```bash
-git clone https://github.com/sun0225SUN/astro-air
-cd astro-air
-bun install
-bun dev
+```sh
+bun install --frozen-lockfile
+bun run dev --background
+bun run test
+bun run build
 ```
 
-`defaultLocale` in `src/config.ts` is served at `/`, with no language prefix. The other locales keep a prefix, such as `/zh/` when English is the default. Changing `defaultLocale` moves that language to the domain root. There is no redirect page.
+O build estático fica em `dist/`. Os testes verificam OAuth, links com a base
+`/volatil/`, RSS, categorias, tags e exclusão de rascunhos em produção.
 
-A first visit to an unprefixed page follows the browser language when it matches a configured locale. The header language button stores that choice and later visits keep it. A prefixed address, such as `/ja/posts/hello`, stays on that language.
+## Conteúdo
 
-| Command | Purpose |
-| --- | --- |
-| `bun dev` | Start the dev server |
-| `bun run build` | Build the static site into `dist/` |
-| `bun run preview` | Serve the build |
-| `bun run lint` | Check formatting and lint with Biome |
-| `bun run format` | Format with Biome |
+Artigos: `src/content/blog/pt-br/*.md`. Páginas: `src/content/pages/pt-br/*.md`.
+Imagens enviadas pelo painel: `public/images/uploads/`. Configuração do site:
+`src/config.ts`. Tradução: `messages/pt-br.json`.
 
-Package scripts run on Bun. `bunfig.toml` sets that, because the Astro CLI ships with a Node shebang.
+A branch `main` dispara build e publicação via GitHub Actions. Pull requests
+executam os testes sem publicar. O fluxo editorial do Decap mantém rascunhos
+em branches/PRs e publica por merge na `main`.
 
-## Layout
+## Ativação do painel
 
-```text
-src/config.ts              Site identity, locales, navigation, page size
-messages/                  Interface copy, one JSON file per locale
-src/content/blog/<locale>  Posts. The public URL is /posts, not this folder.
-src/content/pages/<locale> Standalone pages such as about
-src/styles/                Tokens, theme curtain, article motion, prose, images, nav
-docs/animations.md         Motion design
-```
+O GitHub Pages serve os arquivos estáticos. O login GitHub requer um serviço
+OAuth separado. O código pronto está em `services/oauth/worker.mjs`, destinado
+ao plano gratuito de Cloudflare Workers. Antes da ativação, `/admin/` informa
+que o login está pendente; não tenta usar um provedor incorreto.
 
-## Configuration
+Siga o guia para criar a OAuth App no GitHub, configurar os secrets no Worker
+e definir a variável pública `DECAP_AUTH_URL` no repositório. Nenhuma senha,
+Client Secret ou token deve entrar no código ou nas variáveis públicas.
 
-`src/config.ts` is the only site config:
+## Licença
 
-```ts
-export const config = {
-  title: 'Air',
-  author: 'Guoqi Sun',
-  description: {
-    default: 'A minimal multilingual blog theme.',
-    zh: '一个多语言极简博客主题。',
-  },
-  favicon: [
-    { href: '/favicon.svg', type: 'image/svg+xml' },
-    { href: '/favicon.ico' },
-  ],
-  url: 'https://astro-air.guoqi.dev',
-  defaultLocale: 'en',
-  locales: ['en', 'zh', 'zh-tw', 'ja', 'ko'],
-  handwriting: true,
-  blog: {
-    // A positive integer, or 'all' to show every post.
-    perPage: 10,
-  },
-  nav: [
-    'home',
-    'archive',
-    'tags',
-    'about',
-  ],
-}
-```
-
-`description` provides the homepage, SEO, and RSS description. Use locale codes for translations and `default` as the fallback. `favicon` accepts the attributes for each generated `<link rel="icon">`; put those files in `public/`. `url` is the canonical site address used by Astro and the RSS feed. `handwriting: true` uses a handwritten face for the title and body.
-
-`locales` is both the list and the order of languages. The language button cycles through that list and stays on the same page when the translation exists. Each code needs a `messages/<code>.json` file with the same nested keys as `messages/en.json`. A missing file fails the build. `t('blog.latest')` reads those nested keys.
-
-`nav` mixes three kinds of items, in the order they should appear:
-
-| Item | Result |
-| --- | --- |
-| `'home'` | Home. The label comes from `nav.home`. |
-| `'archive'` or `'blog'` | The archive at `/posts`. The label comes from `nav.archive`. |
-| `'tags'` | The tag index at `/posts/tag`. The label comes from `nav.tags`. |
-| `'about'` | A page whose file name is `about`, using that page's title. |
-| `{ link, label }` | Any URL. `label.default` is the fallback. Add `zh`, `ja`, or another locale key to override it. |
-
-`blog.perPage` is a positive integer, or `'all'` to show every post on one page.
-
-## Write a post
-
-Add a `.md` or `.mdx` file under `src/content/blog/<locale>/`. The file name is the slug. A folder becomes part of the URL, so `notes/hello.md` is served at `/posts/notes/hello` for the default language, and `/<locale>/posts/notes/hello` for the others.
-
-```markdown
----
-title: First post
-description: How posts in this blog are written and published.
-pubDate: 2024-07-08
-updatedDate: 2024-08-01
-draft: false
-pin: 0
-category: Notes
-tags:
-  - writing
-  - markdown
----
-```
-
-`title`, `description`, and `pubDate` are required. `updatedDate`, `draft`, `pin`, `category`, and `tags` are optional. Tags default to an empty list. `pin` from 1 to 99 keeps a post at the top of the home list, and a higher number stays above a lower one. `0` leaves the post in date order.
-
-`draft: true` stays visible while you run `bun dev`, and is left out of `bun run build` and the RSS feed.
-
-Translate a post by adding the same file name under each locale folder. A locale that has no file has no page for that slug.
-
-The archive groups posts by year and shows `MM-DD` beside the title. The home page and tag pages show `YYYY-MM-DD`. Visited titles turn purple.
-
-Headings from `h2` and `h3` become the table of contents on wide screens. Clicking one smooth-scrolls to that heading.
-
-## Write a page
-
-Standalone pages live in `src/content/pages/<locale>/`. The file name, without the extension, is the URL. For the default language, `about.mdx` is `/about`. For the others it is `/<locale>/about`.
-
-```markdown
----
-title: About
-description: A custom page stored with the other standalone pages.
-order: 1
-draft: false
----
-```
-
-`title` and `description` are required. `order` sorts pages when something lists them. `draft` behaves the same way it does for posts.
-
-To put a page in the header, add its slug to `nav`, for example `'about'`. A file named `posts` is reserved and is not treated as a custom page.
-
-MDX files can import components from `src/components/`.
-
-## Interface copy
-
-Edit `messages/en.json`, `messages/zh.json`, `messages/zh-tw.json`, `messages/ja.json`, and `messages/ko.json`. Keys are nested. In a component, `t('post.readingTime', { minutes })` replaces `{minutes}` in the string.
-
-To add a language:
-
-1. Append its code to `locales` in `src/config.ts`.
-2. Add `messages/<code>.json` with the same keys as `messages/en.json`.
-3. Put posts and pages in `src/content/blog/<code>/` and `src/content/pages/<code>/`.
-
-`defaultLocale` must be one of `locales`.
-
-## Analytics
-
-Umami loads only when both variables are set. Copy `.env.example` to `.env` for local builds, and set the same variables in the host for production.
-
-```bash
-UMAMI_URL=https://umami.example
-UMAMI_WEBSITE_ID=your-website-id
-```
-
-`UMAMI_URL` is the Umami origin, without a trailing slash. The site adds `/script.js` and `/recorder.js`, and passes `UMAMI_WEBSITE_ID` as `data-website-id`. Custom events stay on buttons. The theme toggle is the only one. Links do not carry `data-umami-event`, because Umami would cancel the click and skip the page transition.
-
-## RSS
-
-`/rss.xml` lists every published post in every locale. Each item links to its locale URL. The default language has no prefix. Drafts are omitted.
-
-## License
-
-[GPL-3.0-only](./LICENSE)
+**GPL-3.0-only**. Consulte [LICENSE](LICENSE) e [UPSTREAM.md](UPSTREAM.md).
+Créditos originais do Astro Air e seu histórico Git foram preservados.
