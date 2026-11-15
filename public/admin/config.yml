@@ -1,5 +1,5 @@
-site_url: https://zonaeducacional.github.io/volatil
-display_url: https://zonaeducacional.github.io/volatil
+site_url: https://volatil.vibelab.app.br
+display_url: https://volatil.vibelab.app.br
 locale: pt
 backend:
   name: github
@@ -10,7 +10,7 @@ backend:
   branch: main
 publish_mode: editorial_workflow
 media_folder: public/images/uploads
-public_folder: /volatil/images/uploads
+public_folder: /images/uploads
 slug:
   encoding: ascii
   clean_accents: true

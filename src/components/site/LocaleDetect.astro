@@ -2,7 +2,7 @@
 import { config } from '../../config'
 import { defaultLang, locales } from '../../i18n'
 
-const base = config.base
+const base = config.base.replace(/\/+$/, '')
 ---
 
 <script is:inline define:vars={{ locales, defaultLang, base }}>

@@ -5,10 +5,10 @@ export const config = {
   description: {
     default: 'Um espaço para compartilhar ideias, experiências e conhecimento.',
   },
-  favicon: [{ href: '/volatil/favicon.svg', type: 'image/svg+xml' }],
+  favicon: [{ href: '/favicon.svg', type: 'image/svg+xml' }],
 
-  url: 'https://zonaeducacional.github.io',
-  base: '/volatil',
+  url: 'https://volatil.vibelab.app.br',
+  base: '/',
   author: 'Volátil',
   blog: {
     // A positive integer, or 'all' to show every post.

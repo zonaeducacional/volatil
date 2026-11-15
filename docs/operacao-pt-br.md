@@ -2,8 +2,8 @@
 
 ## Endereços e arquitetura
 
-- Site: https://zonaeducacional.github.io/volatil/
-- Painel: https://zonaeducacional.github.io/volatil/admin/
+- Site: https://volatil.vibelab.app.br/
+- Painel: https://volatil.vibelab.app.br/admin/
 - Repositório: https://github.com/zonaeducacional/volatil
 - Tema de origem: Astro Air 0.0.1, commit `08f9e3995e1420c0a951330ac8016c8c6cbe146d`.
 - Runtime de build: Bun 1.4.4; Astro 7.4.12, fixado no lockfile.
@@ -37,7 +37,7 @@ produção cria artigos temporários, verifica URLs, idioma, RSS, categorias,
 tags e exclusão de rascunhos, remove os arquivos e reconstrói. Não execute
 simultaneamente com outra edição ou build.
 
-O idioma padrão `pt-br` é servido em `/volatil/`, sem prefixo de idioma.
+O idioma padrão `pt-br` é servido em `/`, sem prefixo de idioma.
 As traduções e os exemplos originais estão preservados, com os outros idiomas
 desabilitados. Ajustes de identidade ficam em `src/config.ts`.
 
@@ -83,7 +83,7 @@ Em Settings → Variables and Secrets, adicione:
 
 | Nome | Tipo | Valor |
 | --- | --- | --- |
-| `ALLOWED_ORIGIN` | Texto | `https://zonaeducacional.github.io` |
+| `ALLOWED_ORIGIN` | Texto | `https://volatil.vibelab.app.br` |
 | `REPOSITORY` | Texto | `zonaeducacional/volatil` |
 
 Alternativamente, com Wrangler autenticado, a configuração de deploy está em
@@ -94,7 +94,7 @@ Alternativamente, com Wrangler autenticado, a configuração de deploy está em
 Abra https://github.com/settings/applications/new e preencha:
 
 - Application name: `Volátil CMS`.
-- Homepage URL: `https://zonaeducacional.github.io/volatil/`.
+- Homepage URL: `https://volatil.vibelab.app.br/`.
 - Authorization callback URL: `https://volatil-oauth.SEUSUBDOMINIO.workers.dev/callback`.
 
 Use o endereço real do seu Worker. Gere um Client Secret e copie-o diretamente
@@ -133,7 +133,7 @@ apenas no ambiente antes de `bun run build`.
 
 ### 4. Testar com sua conta
 
-Acesse `/volatil/admin/`, entre pelo GitHub e autorize a OAuth App. Os editores
+Acesse `/admin/`, entre pelo GitHub e autorize a OAuth App. Os editores
 precisam de permissão de escrita no repositório. Crie um artigo de teste com
 imagem, salve como rascunho e confirme que não aparece no site público.
 Publique-o e acompanhe a execução no Actions; confirme o artigo e a imagem no
@@ -146,7 +146,7 @@ testes automatizados locais usam respostas simuladas do GitHub.
 
 Em Artigos, preencha título, resumo, data, categoria, tags e conteúdo. Use o
 editor Markdown para inserir imagens; uploads ficam em `public/images/uploads`
-e os links públicos começam por `/volatil/images/uploads`.
+e os links públicos começam por `/images/uploads`.
 
 O fluxo editorial mantém novos artigos em branches/PRs e publica por merge
 na `main`. Use os estados Rascunho, Em revisão e Pronto para publicar para
@@ -163,7 +163,7 @@ Páginas permite editar Sobre. Para novas páginas, adicione o arquivo no códig
 e sua entrada em `config.nav`. O painel edita Markdown; componentes MDX
 originais continuam disponíveis para edição no código.
 
-Os links internos escritos no Markdown devem incluir `/volatil/`. O projeto
+Os links internos escritos no Markdown devem incluir `/`. O projeto
 verifica links e assets gerados para evitar caminhos quebrados no Pages.
 
 ## Publicação e manutenção
@@ -204,3 +204,39 @@ As requisições ao GitHub usam `redirect: manual`, compatível com Cloudflare
 Workers, e não seguem redirecionamentos com credenciais. Erros conhecidos
 recebem mensagens específicas; corpos de erro, tokens e secrets não são
 exibidos nem registrados.
+
+## Migração para o domínio próprio
+
+Destino: `https://volatil.vibelab.app.br/`, com painel em `/admin/`.
+A branch `feat/volatil-custom-domain` prepara a migração e não muda a produção
+enquanto não for integrada à main. A autorização atual do Wrangler consegue
+publicar o Worker, mas a API de registros DNS retorna HTTP 403.
+
+Registro necessário na zona Cloudflare `vibelab.app.br`:
+
+| Tipo | Nome | Destino | Proxy | TTL |
+| --- | --- | --- | --- | --- |
+| CNAME | volatil | zonaeducacional.github.io | Somente DNS (nuvem cinza) | Auto |
+
+Antes de criar ou alterar o registro, consulte os registros exatos existentes
+para `volatil.vibelab.app.br`. Não substitua registros que sustentem outro
+serviço sem revisar sua finalidade. O destino do CNAME não inclui `/volatil`.
+
+Na mudança coordenada:
+
+1. Cadastre `volatil.vibelab.app.br` em Settings → Pages → Custom domain no
+   repositório `zonaeducacional/volatil`.
+2. Crie o registro CNAME na Cloudflare ou ajuste o registro específico após
+   verificar que ele corresponde a este site.
+3. Integre a branch de migração e aguarde o workflow de publicação.
+4. Publique a configuração do Worker em `services/oauth/wrangler.toml`, que
+   altera `ALLOWED_ORIGIN` para o domínio novo, preservando os dois secrets.
+5. Aguarde o certificado do GitHub Pages e habilite Enforce HTTPS. Valide o
+   site, o artigo publicado, os assets, o RSS e o painel no domínio novo.
+6. Atualize a Homepage URL da OAuth App GitHub para o endereço novo. O callback
+   continua `https://volatil-oauth.zonaeducacional.workers.dev/callback`; não é
+   necessário gerar novas credenciais.
+
+O GitHub informa que DNS e disponibilização do HTTPS podem levar até 24 horas.
+Não ative a configuração de domínio do GitHub antes de coordenar a mudança de
+DNS, pois o endereço antigo passa a redirecionar para o endereço novo.
