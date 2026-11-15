@@ -3,10 +3,31 @@
 import getpass
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
 import sys
+
+
+def find_node():
+    candidates = []
+    current = shutil.which('node')
+    if current:
+        candidates.append(Path(current))
+    installed = (Path.home() / '.nvm/versions/node').glob('v*/bin/node')
+    def version_key(path):
+        return tuple(int(part) for part in path.parents[1].name.lstrip('v').split('.'))
+    candidates.extend(sorted(installed, key=version_key, reverse=True))
+    for candidate in dict.fromkeys(candidates):
+        try:
+            result = subprocess.run([str(candidate), '--version'], capture_output=True, text=True, check=True)
+            match = re.fullmatch(r'v(\d+)\.(\d+)\.(\d+)', result.stdout.strip())
+            if match and tuple(map(int, match.groups())) >= (22, 12, 0):
+                return str(candidate), result.stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            continue
+    raise SystemExit('Node.js 22.12.0 ou superior não encontrado. Instale ou ative o Node 24.')
 
 
 def main():
@@ -16,13 +37,8 @@ def main():
     cli = root / '.tools/cloudflare/node_modules/wrangler/bin/wrangler.js'
     if not cli.is_file():
         raise SystemExit('Wrangler local ausente. Consulte docs/operacao-pt-br.md.')
-    node = shutil.which('node')
-    if not node:
-        candidates = sorted((Path.home() / '.nvm/versions/node').glob('v24.*/bin/node'))
-        if candidates:
-            node = str(candidates[-1])
-    if not node:
-        raise SystemExit('Node.js não encontrado. Ative o Node 24 no terminal.')
+    node, version = find_node()
+    print(f'Usando Node.js {version}.')
     client_id = input('Client ID da OAuth App Volátil CMS: ').strip()
     client_secret = getpass.getpass('Client Secret (entrada oculta): ').strip()
     if not client_id or not client_secret:
