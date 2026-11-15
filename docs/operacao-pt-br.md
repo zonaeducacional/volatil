@@ -44,7 +44,10 @@ desabilitados. Ajustes de identidade ficam em `src/config.ts`.
 ## Estado da ativação
 
 O Worker foi publicado em `https://volatil-oauth.zonaeducacional.workers.dev`.
-A OAuth App e seus secrets ainda precisam ser configurados pelo proprietário.
+A OAuth App e os dois secrets estão configurados. A variável de repositório
+`DECAP_AUTH_URL` aponta para esse Worker, e o painel usa o login GitHub.
+O endpoint `/health` confirmou `configured: true`; a validação final do login
+é feita pelo proprietário ao entrar no painel.
 A URL de callback definitiva é
 `https://volatil-oauth.zonaeducacional.workers.dev/callback`.
 
