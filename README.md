@@ -2,8 +2,8 @@
 
 Blog em português brasileiro, baseado no [Astro Air](https://github.com/sun0225SUN/astro-air), com publicação automática no GitHub Pages e painel Decap CMS.
 
-- Site: https://zonaeducacional.github.io/volatil/
-- Painel: https://zonaeducacional.github.io/volatil/admin/
+- Site: https://volatil.vibelab.app.br/
+- Painel: https://volatil.vibelab.app.br/admin/
 - Código: https://github.com/zonaeducacional/volatil
 - [Guia de operação e ativação do login](docs/operacao-pt-br.md)
 - [Origem, alterações e licença](UPSTREAM.md)
@@ -20,7 +20,7 @@ bun run build
 ```
 
 O build estático fica em `dist/`. Os testes verificam OAuth, links com a base
-`/volatil/`, RSS, categorias, tags e exclusão de rascunhos em produção.
+`/`, RSS, categorias, tags e exclusão de rascunhos em produção.
 
 ## Conteúdo
 

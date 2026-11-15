@@ -4,6 +4,6 @@ compatibility_date = "2026-11-15"
 workers_dev = true
 
 [vars]
-ALLOWED_ORIGIN = "https://zonaeducacional.github.io"
+ALLOWED_ORIGIN = "https://volatil.vibelab.app.br"
 REPOSITORY = "zonaeducacional/volatil"
 # GITHUB_CLIENT_ID e GITHUB_CLIENT_SECRET devem ser secrets do Worker.

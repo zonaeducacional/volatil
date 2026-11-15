@@ -1,6 +1,8 @@
 import { strict as assert } from 'node:assert'
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
+import { config } from '../src/config'
+import { withBase } from '../src/lib/site'
 
 const folder = 'src/content/blog/pt-br'
 const published = `${folder}/verificacao-publicado.md`
@@ -15,7 +17,7 @@ try {
   ] as const) {
     writeFileSync(
       file,
-      `---\ntitle: Verificação ${hidden ? 'rascunho' : 'publicado'}\ndescription: Conteúdo temporário de teste.\npubDate: 2026-11-15\nauthor: ""\nupdatedDate: null\ndraft: ${hidden}\ntags: [verificacao]\ncategory: Testes\n---\n\nTeste editorial com imagem.\n\n![Teste](/volatil/favicon.svg)\n`,
+      `---\ntitle: Verificação ${hidden ? 'rascunho' : 'publicado'}\ndescription: Conteúdo temporário de teste.\npubDate: 2026-11-15\nauthor: ""\nupdatedDate: null\ndraft: ${hidden}\ntags: [verificacao]\ncategory: Testes\n---\n\nTeste editorial com imagem.\n\n![Teste](${withBase('favicon.svg')})\n`,
     )
   }
   const result = spawnSync('bun', ['run', 'build'], { stdio: 'inherit' })
@@ -51,23 +53,22 @@ try {
   assert.equal(cms.backend.name, 'github')
   assert.equal(cms.publish_mode, 'editorial_workflow')
   assert.equal(cms.collections[0].folder, folder)
-  assert.equal(cms.public_folder, '/volatil/images/uploads')
+  assert.equal(cms.public_folder, withBase('images/uploads'))
   assert.equal(cms.backend.repo, 'zonaeducacional/volatil')
   const root = readFileSync('dist/index.html', 'utf8')
-  assert(root.includes('https://zonaeducacional.github.io/volatil/'))
+  assert(root.includes(new URL(withBase(''), config.url).href))
   assert(!root.includes('/volatil/volatil/'))
   for (const file of new Bun.Glob('**/*.html').scanSync('dist')) {
     const html = readFileSync(`dist/${file}`, 'utf8')
     for (const match of html.matchAll(/(?:href|src)="([^"#]+)"/g)) {
       let target = match[1]
-      if (target.startsWith('https://zonaeducacional.github.io/'))
-        target = new URL(target).pathname
+      if (target.startsWith(`${config.url}/`)) target = new URL(target).pathname
       if (!target.startsWith('/') || target.startsWith('//')) continue
       assert(
-        target.startsWith('/volatil/'),
+        target.startsWith(withBase('')),
         `Link fora da base: ${target} em ${file}`,
       )
-      const path = `dist/${decodeURIComponent(target.slice('/volatil/'.length)).split(/[?#]/)[0]}`
+      const path = `dist/${decodeURIComponent(target.slice(withBase('').length)).split(/[?#]/)[0]}`
       assert(
         existsSync(path) || existsSync(`${path}/index.html`),
         `Link local ausente: ${target}`,
@@ -77,9 +78,9 @@ try {
   const css = [...new Bun.Glob('_astro/*.css').scanSync('dist')]
     .map((file) => readFileSync(`dist/${file}`, 'utf8'))
     .join('')
-  assert(css.includes('/volatil/fonts/'))
-  assert(css.includes('/volatil/noise.png'))
-  assert(!/url\(["']?\/(?:fonts|noise)/.test(css))
+  assert(css.includes(withBase('fonts/')))
+  assert(css.includes(withBase('noise.png')))
+  assert(!css.includes('/volatil/'))
   assert(existsSync('dist/.nojekyll'))
   const oauth = JSON.parse(readFileSync('dist/admin/oauth.json', 'utf8'))
   assert.equal(

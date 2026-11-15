@@ -4,14 +4,14 @@ import { handle } from './worker.mjs'
 const env = {
   GITHUB_CLIENT_ID: 'client-id-de-teste',
   GITHUB_CLIENT_SECRET: 'segredo-ficticio-de-teste',
-  ALLOWED_ORIGIN: 'https://zonaeducacional.github.io',
+  ALLOWED_ORIGIN: 'https://volatil.vibelab.app.br',
   REPOSITORY: 'zonaeducacional/volatil',
 }
 
 async function start() {
   const result = await handle(
     new Request(
-      'https://oauth.example/auth?provider=github&site_id=zonaeducacional.github.io&scope=repo',
+      'https://oauth.example/auth?provider=github&site_id=volatil.vibelab.app.br&scope=repo',
     ),
     env,
   )
@@ -113,7 +113,7 @@ describe('OAuth GitHub para Decap', () => {
     expect(html).toContain('authorization:github:success:')
     expect(html).toContain('event.origin !== origin')
     expect(html).toContain('event.source !== window.opener')
-    expect(html).toContain('https://zonaeducacional.github.io')
+    expect(html).toContain('https://volatil.vibelab.app.br')
     expect(html).not.toContain("postMessage('*'")
     expect(html).not.toContain(env.GITHUB_CLIENT_SECRET)
     expect(result.headers.get('cache-control')).toBe('no-store')

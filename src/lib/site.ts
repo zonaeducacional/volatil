@@ -6,13 +6,16 @@ export function siteDescription(locale: string) {
 }
 
 export function withBase(path: string) {
-  return `${config.base}/${path.replace(/^\/+/, '')}`
+  const base = config.base.replace(/\/+$/, '')
+  return `${base}/${path.replace(/^\/+/, '')}`
 }
 
 export function withoutBase(path: string) {
-  return path === config.base
+  const base = config.base.replace(/\/+$/, '')
+  if (!base) return path
+  return path === base
     ? '/'
-    : path.startsWith(`${config.base}/`)
-      ? path.slice(config.base.length)
+    : path.startsWith(`${base}/`)
+      ? path.slice(base.length)
       : path
 }
