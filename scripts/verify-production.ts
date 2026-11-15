@@ -15,7 +15,7 @@ try {
   ] as const) {
     writeFileSync(
       file,
-      `---\ntitle: Verificação ${hidden ? 'rascunho' : 'publicado'}\ndescription: Conteúdo temporário de teste.\npubDate: 2026-11-15\ndraft: ${hidden}\ntags: [verificacao]\ncategory: Testes\n---\n\nTeste editorial com imagem.\n\n![Teste](/volatil/favicon.svg)\n`,
+      `---\ntitle: Verificação ${hidden ? 'rascunho' : 'publicado'}\ndescription: Conteúdo temporário de teste.\npubDate: 2026-11-15\nauthor: ""\nupdatedDate: null\ndraft: ${hidden}\ntags: [verificacao]\ncategory: Testes\n---\n\nTeste editorial com imagem.\n\n![Teste](/volatil/favicon.svg)\n`,
     )
   }
   const result = spawnSync('bun', ['run', 'build'], { stdio: 'inherit' })
