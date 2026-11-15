@@ -43,14 +43,8 @@ collections:
           required: false,
           format: "YYYY-MM-DDTHH:mm:ssZ",
         }
-      - {
-          name: draft,
-          label: Ocultar do site (rascunho),
-          widget: boolean,
-          default: false,
-          required: false,
-          hint: "O fluxo editorial mantém artigos não publicados em branches. Este campo também oculta um artigo presente na main.",
-        }
+      # Rascunhos são controlados pelo fluxo editorial, em branches separadas.
+      - { name: draft, widget: hidden, default: false }
       - {
           name: pin,
           label: Prioridade de destaque,
@@ -80,11 +74,5 @@ collections:
           value_type: int,
           required: false,
         }
-      - {
-          name: draft,
-          label: Ocultar do site,
-          widget: boolean,
-          default: false,
-          required: false,
-        }
+      - { name: draft, widget: hidden, default: false }
       - { name: body, label: Conteúdo, widget: markdown }

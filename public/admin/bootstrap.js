@@ -15,6 +15,10 @@ async function start() {
     script.src = 'https://unpkg.com/decap-cms@3.17.3/dist/decap-cms.js'
     script.onload = () => {
       status.remove()
+      window.CMS.registerEventListener({
+        name: 'preSave',
+        handler: ({ entry }) => entry.get('data').set('draft', false),
+      })
       window.CMS.init({ config: { backend: { base_url: baseUrl } } })
     }
     script.onerror = () => {

@@ -32,7 +32,7 @@ bun run build
 AGENTS.md determina o servidor em modo background. Gerencie-o com
 `bun run astro dev status`, `bun run astro dev logs` e `bun run astro dev stop`.
 
-`bun run test` executa nove testes OAuth e um teste de produção. O teste de
+`bun run test` executa nove testes OAuth, um teste do painel e um teste de produção. O teste de
 produção cria artigos temporários, verifica URLs, idioma, RSS, categorias,
 tags e exclusão de rascunhos, remove os arquivos e reconstrói. Não execute
 simultaneamente com outra edição ou build.
@@ -149,9 +149,14 @@ editor Markdown para inserir imagens; uploads ficam em `public/images/uploads`
 e os links públicos começam por `/volatil/images/uploads`.
 
 O fluxo editorial mantém novos artigos em branches/PRs e publica por merge
-na `main`. O campo “Ocultar do site (rascunho)” é proteção adicional: ligado,
-exclui o artigo do build de produção mesmo que o arquivo esteja na `main`.
-Para publicar, desligue esse campo e conclua a publicação no fluxo editorial.
+na `main`. Use os estados Rascunho, Em revisão e Pronto para publicar para
+organizar o conteúdo. Ao publicar, aguarde o build terminar antes de abrir o
+artigo no site; durante a publicação o endereço novo ainda pode retornar 404.
+
+O painel grava `draft: false` automaticamente, pois o rascunho já é protegido
+pela branch editorial. O campo técnico fica oculto para não contradizer a ação
+Publicar. Arquivos editados diretamente no código continuam aceitando
+`draft: true`, que exclui o conteúdo de todas as páginas e do RSS em produção.
 
 A data organiza os artigos; não há agendamento automático por data futura.
 Páginas permite editar Sobre. Para novas páginas, adicione o arquivo no código

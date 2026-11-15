@@ -13,7 +13,7 @@
     "astro": "astro",
     "lint": "biome check",
     "format": "biome check --write",
-    "test": "bun test services/oauth && bun scripts/verify-production.ts"
+    "test": "bun test services/oauth scripts/admin.test.ts && bun scripts/verify-production.ts"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.10",
