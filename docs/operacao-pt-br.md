@@ -41,6 +41,29 @@ O idioma padrão `pt-br` é servido em `/volatil/`, sem prefixo de idioma.
 As traduções e os exemplos originais estão preservados, com os outros idiomas
 desabilitados. Ajustes de identidade ficam em `src/config.ts`.
 
+## Estado da ativação
+
+O Worker foi publicado em `https://volatil-oauth.zonaeducacional.workers.dev`.
+A OAuth App e seus secrets ainda precisam ser configurados pelo proprietário.
+A URL de callback definitiva é
+`https://volatil-oauth.zonaeducacional.workers.dev/callback`.
+
+Neste computador, Wrangler 4.162.0 está instalado em `.tools/cloudflare`
+(pasta ignorada pelo Git). Após criar a OAuth App, execute em um terminal:
+
+```sh
+cd /home/sergio/Projetos/astro-air-ptbr
+python3 scripts/configure-oauth-secrets.py
+```
+
+O programa solicita Client ID e Client Secret (oculto), envia ambos diretamente
+aos secrets do Worker e não grava as credenciais em arquivos. Ao terminar,
+avise ao Codex para verificar `/health`, configurar `DECAP_AUTH_URL` e reconstruir
+o site. Não cole o Client Secret no chat.
+
+Se precisar reinstalar o CLI local, use Node 24 e
+`npm install --prefix .tools/cloudflare wrangler@4.162.0 --no-audit --no-fund`.
+
 ## Ativar o login: etapas na sua conta
 
 ### 1. Criar o Worker gratuito
