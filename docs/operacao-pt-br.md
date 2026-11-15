@@ -208,9 +208,13 @@ exibidos nem registrados.
 ## Migração para o domínio próprio
 
 Destino: `https://volatil.vibelab.app.br/`, com painel em `/admin/`.
-A branch `feat/volatil-custom-domain` prepara a migração e não muda a produção
-enquanto não for integrada à main. A autorização atual do Wrangler consegue
-publicar o Worker, mas a API de registros DNS retorna HTTP 403.
+A migração foi integrada à `main` pelo PR #3 em 15/11/2026. O GitHub Pages
+está configurado com o domínio próprio e o CNAME foi criado na Cloudflare,
+com proxy desativado. Os registros que já existiam na zona foram preservados.
+A origem permitida do Worker OAuth também foi atualizada.
+
+A alteração DNS foi feita com token específico, pois a sessão Wrangler não
+possui essa permissão. A cópia local desse token deve ser removida após o uso.
 
 Registro necessário na zona Cloudflare `vibelab.app.br`:
 
