@@ -84,6 +84,7 @@ describe('OAuth GitHub para Decap', () => {
     const calls: string[] = []
     const fetcher = async (url: string, options: RequestInit) => {
       calls.push(url)
+      expect(options.redirect).toBe('manual')
       if (calls.length === 1) {
         const body = options.body as URLSearchParams
         expect(body.get('client_secret')).toBe(env.GITHUB_CLIENT_SECRET)
@@ -140,6 +141,57 @@ describe('OAuth GitHub para Decap', () => {
     const html = await result.text()
     expect(html).toContain('authorization:github:error:')
     expect(html).not.toContain('token-nao-deve-aparecer')
+  })
+
+  test('identifica credenciais recusadas sem revelar a resposta sensível do GitHub', async () => {
+    const flow = await start()
+    const result = await handle(
+      callback(flow.cookie, flow.location.searchParams.get('state') ?? ''),
+      env,
+      async (_url: string, options: RequestInit) => {
+        expect((options.headers as Record<string, string>)['User-Agent']).toBe(
+          'volatil-decap-oauth',
+        )
+        return Response.json({
+          error: 'incorrect_client_credentials',
+          error_description: 'resposta-sensivel-nao-expor',
+        })
+      },
+    )
+    const html = await result.text()
+    expect(html).toContain('O GitHub recusou o Client ID ou o Client Secret')
+    expect(html).not.toContain('resposta-sensivel-nao-expor')
+  })
+
+  test('identifica resposta não JSON sem exibir seu corpo', async () => {
+    const flow = await start()
+    const result = await handle(
+      callback(flow.cookie, flow.location.searchParams.get('state') ?? ''),
+      env,
+      async () => new Response('conteudo-privado', { status: 403 }),
+    )
+    const html = await result.text()
+    expect(html).toContain('HTTP 403')
+    expect(html).not.toContain('conteudo-privado')
+  })
+
+  test('não segue redirecionamentos da troca OAuth com credenciais', async () => {
+    const flow = await start()
+    let calls = 0
+    const result = await handle(
+      callback(flow.cookie, flow.location.searchParams.get('state') ?? ''),
+      env,
+      async (_url: string, options: RequestInit) => {
+        calls += 1
+        expect(options.redirect).toBe('manual')
+        return new Response(null, {
+          status: 302,
+          headers: { Location: 'https://outro.example/' },
+        })
+      },
+    )
+    expect(calls).toBe(1)
+    expect(await result.text()).toContain('HTTP 302')
   })
 
   test('rejeita provedor ou site diferente e informa configuração pendente', async () => {

@@ -32,7 +32,7 @@ bun run build
 AGENTS.md determina o servidor em modo background. Gerencie-o com
 `bun run astro dev status`, `bun run astro dev logs` e `bun run astro dev stop`.
 
-`bun run test` executa seis testes OAuth e um teste de produção. O teste de
+`bun run test` executa nove testes OAuth e um teste de produção. O teste de
 produção cria artigos temporários, verifica URLs, idioma, RSS, categorias,
 tags e exclusão de rascunhos, remove os arquivos e reconstrói. Não execute
 simultaneamente com outra edição ou build.
@@ -192,3 +192,10 @@ aponta para `zonaeducacional/volatil`.
 - https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
 - https://developers.cloudflare.com/workers/platform/pricing/
 - https://developers.cloudflare.com/workers/configuration/secrets/
+
+## Diagnóstico OAuth
+
+As requisições ao GitHub usam `redirect: manual`, compatível com Cloudflare
+Workers, e não seguem redirecionamentos com credenciais. Erros conhecidos
+recebem mensagens específicas; corpos de erro, tokens e secrets não são
+exibidos nem registrados.

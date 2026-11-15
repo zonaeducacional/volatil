@@ -2,6 +2,17 @@
 const cookieName = '__Host-volatil_oauth'
 const cookieOptions = 'Path=/; Secure; HttpOnly; SameSite=Lax'
 const clearCookie = `${cookieName}=; ${cookieOptions}; Max-Age=0`
+const exchangeErrors = {
+  incorrect_client_credentials:
+    'O GitHub recusou o Client ID ou o Client Secret. Confira as credenciais da mesma OAuth App.',
+  bad_verification_code:
+    'O código de autorização expirou ou já foi usado. Feche a janela e entre novamente.',
+  redirect_uri_mismatch:
+    'O endereço de retorno não corresponde ao cadastrado na OAuth App.',
+  code_verifier_mismatch:
+    'A verificação da sessão falhou. Feche a janela e entre novamente.',
+}
+
 const githubHeaders = {
   Accept: 'application/vnd.github+json',
   'User-Agent': 'volatil-decap-oauth',
@@ -145,13 +156,15 @@ export async function handle(request, env, fetcher = fetch) {
       message: 'Autorização cancelada. Tente novamente.',
     })
 
+  let stage = 'exchange'
   try {
     const exchange = await fetcher(
       'https://github.com/login/oauth/access_token',
       {
         method: 'POST',
-        redirect: 'error',
+        redirect: 'manual',
         headers: {
+          ...githubHeaders,
           Accept: 'application/json',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -164,13 +177,29 @@ export async function handle(request, env, fetcher = fetch) {
         }),
       },
     )
-    const data = await exchange.json()
-    if (!exchange.ok || typeof data.access_token !== 'string' || data.error)
-      throw new Error('exchange')
+    let data
+    try {
+      data = await exchange.json()
+    } catch {
+      return popup(origin, false, {
+        message: `O GitHub retornou uma resposta inesperada na autorização (HTTP ${exchange.status}).`,
+      })
+    }
+    if (!exchange.ok || typeof data.access_token !== 'string' || data.error) {
+      const known = Object.hasOwn(exchangeErrors, data.error)
+        ? exchangeErrors[data.error]
+        : undefined
+      return popup(origin, false, {
+        message:
+          known ??
+          `O GitHub recusou a troca de autorização (HTTP ${exchange.status}).`,
+      })
+    }
+    stage = 'repository'
     const repository = await fetcher(
       `https://api.github.com/repos/${env.REPOSITORY}`,
       {
-        redirect: 'error',
+        redirect: 'manual',
         headers: {
           ...githubHeaders,
           Authorization: `Bearer ${data.access_token}`,
@@ -188,7 +217,9 @@ export async function handle(request, env, fetcher = fetch) {
     // Não registre respostas do GitHub: podem conter credenciais.
     return popup(origin, false, {
       message:
-        'Não foi possível concluir o login. Tente novamente pelo painel.',
+        stage === 'exchange'
+          ? 'Não foi possível comunicar com o GitHub para autorizar o login. Tente novamente.'
+          : 'Não foi possível confirmar o acesso ao repositório no GitHub. Tente novamente.',
     })
   }
 }
